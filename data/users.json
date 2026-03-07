@@ -1,0 +1,18 @@
+{
+  "users": [
+    {
+      "username": "muller",
+      "email": "mullercode16@gmail.com",
+      "password": "1234",
+      "profession": "Fullstack developer | AI Automation Engineer",
+      "bio": "to build  sth amazin and find co founder right",
+      "skills": [],
+      "location": "Addis Ababa, Ethiopia",
+      "linkedin": "",
+      "github": "",
+      "avatarUrl": "",
+      "id": "5cdef11f-28df-4bfc-9b60-f6803771e9d9",
+      "createdAt": "2026-03-07T10:47:40.895Z"
+    }
+  ]
+}
