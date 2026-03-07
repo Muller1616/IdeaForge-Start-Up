@@ -1,131 +1,229 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
+import { useState } from "react";
+import { register } from "@/lib/auth";
+import { User, Mail, Briefcase, MapPin, AlignLeft, Code, Linkedin, Github, Image as ImageIcon } from "lucide-react";
 
 export default function RegisterPage() {
-  const router = useRouter();
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    skills: "",
-    bio: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsPending(true);
+    setError(null);
+    
+    const formData = new FormData(event.currentTarget);
+    try {
+      const result = await register(formData);
+      if (result && result.error) {
+        setError(result.error);
+        setIsPending(false);
+      }
+    } catch (err) {
+      // Handled by redirect in server action
     }
-    setIsLoading(true);
-    // TODO: Connect to backend auth
-    await new Promise((r) => setTimeout(r, 1000));
-    setIsLoading(false);
-    toast.success("Account created successfully.");
-    router.push("/dashboard");
-  };
-
-  const updateField = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  }
 
   return (
-    <div className="flex min-h-[calc(100vh-200px)] items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4 py-12">
+      <div className="w-full max-w-2xl rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-8 shadow-xl">
         <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-bold">
-              IF
-            </span>
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-              IdeaForge
-            </span>
-          </Link>
+          <h1 className="mb-2 text-3xl font-bold">Create your profile</h1>
+          <p className="text-[var(--color-text-muted)]">
+            Join IdeaForge with a rich profile to find the best co-founders.
+          </p>
         </div>
 
-        <Card className="border-slate-700/50 bg-slate-800/30 backdrop-blur">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-white">Create your account</CardTitle>
-            <CardDescription className="text-slate-400">
-              Join IdeaForge and start collaborating on startup ideas
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <Input
-                label="Full Name"
-                type="text"
-                placeholder="John Doe"
-                value={formData.name}
-                onChange={(e) => updateField("name", e.target.value)}
-                required
-              />
-              <Input
-                label="Email"
-                type="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={(e) => updateField("email", e.target.value)}
-                required
-              />
-              <Input
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => updateField("password", e.target.value)}
-                required
-              />
-              <Input
-                label="Confirm Password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.confirmPassword}
-                onChange={(e) => updateField("confirmPassword", e.target.value)}
-                required
-              />
-              <Input
-                label="Skills"
-                type="text"
-                placeholder="e.g. React, Node.js, UI/UX"
-                value={formData.skills}
-                onChange={(e) => updateField("skills", e.target.value)}
-              />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="rounded-lg bg-[var(--color-error)]/10 p-4 text-sm text-[var(--color-error)] border border-[var(--color-error)]/20">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Column 1 */}
+            <div className="space-y-6">
               <div>
-                <label className="mb-1.5 block text-sm font-medium text-slate-300">
-                  Bio
+                <label htmlFor="username" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  <User className="w-4 h-4 text-[var(--color-text-muted)]" /> Username *
                 </label>
-                <textarea
-                  className="w-full rounded-lg border border-slate-600 bg-slate-800/50 px-4 py-3 text-white placeholder-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                  placeholder="Tell us about yourself..."
-                  rows={3}
-                  value={formData.bio}
-                  onChange={(e) => updateField("bio", e.target.value)}
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  required
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="johndoe"
                 />
               </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating account..." : "Create account"}
-              </Button>
-              <p className="text-center text-sm text-slate-400">
-                Already have an account?{" "}
-                <Link href="/login" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                  Sign in
-                </Link>
-              </p>
-            </CardFooter>
-          </form>
-        </Card>
+
+              <div>
+                <label htmlFor="email" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-[var(--color-text-muted)]" /> Email *
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="john@example.com"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="password" className="mb-2 block text-sm font-medium text-[var(--color-text)]">
+                  Password *
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  required
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="••••••••"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="profession" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  <Briefcase className="w-4 h-4 text-[var(--color-text-muted)]" /> Profession *
+                </label>
+                <input
+                  type="text"
+                  id="profession"
+                  name="profession"
+                  required
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="Developer, Designer, Founder..."
+                />
+              </div>
+
+              <div>
+                <label htmlFor="location" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-[var(--color-text-muted)]" /> Location *
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  required
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="San Francisco, CA"
+                />
+              </div>
+            </div>
+
+            {/* Column 2 */}
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="bio" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  <AlignLeft className="w-4 h-4 text-[var(--color-text-muted)]" /> Bio (Max 300 chars) *
+                </label>
+                <textarea
+                  id="bio"
+                  name="bio"
+                  required
+                  maxLength={300}
+                  rows={4}
+                  disabled={isPending}
+                  className="w-full resize-none rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="Tell us about your background and what you're looking to build..."
+                />
+              </div>
+
+              <div>
+                <label htmlFor="skills" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  <Code className="w-4 h-4 text-[var(--color-text-muted)]" /> Skills
+                </label>
+                <input
+                  type="text"
+                  id="skills"
+                  name="skills"
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="React, TypeScript, Marketing (comma separated)"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="linkedin" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                    <Linkedin className="w-4 h-4 text-[var(--color-text-muted)]" /> LinkedIn
+                  </label>
+                  <input
+                    type="url"
+                    id="linkedin"
+                    name="linkedin"
+                    disabled={isPending}
+                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50 text-sm"
+                    placeholder="https://linkedin.com/in/..."
+                  />
+                </div>
+                <div>
+                  <label htmlFor="github" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                    <Github className="w-4 h-4 text-[var(--color-text-muted)]" /> GitHub
+                  </label>
+                  <input
+                    type="url"
+                    id="github"
+                    name="github"
+                    disabled={isPending}
+                    className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50 text-sm"
+                    placeholder="https://github.com/..."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="avatarUrl" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  <ImageIcon className="w-4 h-4 text-[var(--color-text-muted)]" /> Profile Picture URL
+                </label>
+                <input
+                  type="url"
+                  id="avatarUrl"
+                  name="avatarUrl"
+                  disabled={isPending}
+                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+                  placeholder="https://example.com/avatar.jpg"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-4 border-t border-[var(--color-border)]">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="w-full rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] py-4 font-medium text-white shadow-lg transition hover:scale-[1.02] hover:shadow-[var(--shadow-glow)] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 disabled:hover:shadow-lg flex justify-center items-center text-lg"
+            >
+              {isPending ? (
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : "Create Profile & Sign In"}
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-[var(--color-primary)] hover:underline"
+          >
+            Log in
+          </Link>
+        </p>
       </div>
     </div>
   );
