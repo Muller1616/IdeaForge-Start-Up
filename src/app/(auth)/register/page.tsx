@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import { register } from "@/lib/auth";
-import { User, Mail, Briefcase, MapPin, AlignLeft, Code, Linkedin, Github, Image as ImageIcon } from "lucide-react";
+import { User, Mail, Briefcase, MapPin, AlignLeft, Code, Linkedin, Github } from "lucide-react";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [avatarBase64, setAvatarBase64] = useState<string>("");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -184,17 +186,11 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <label htmlFor="avatarUrl" className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
-                  <ImageIcon className="w-4 h-4 text-[var(--color-text-muted)]" /> Profile Picture URL
+                <label className="mb-2 block text-sm font-medium text-[var(--color-text)] flex items-center gap-2">
+                  Profile Picture
                 </label>
-                <input
-                  type="url"
-                  id="avatarUrl"
-                  name="avatarUrl"
-                  disabled={isPending}
-                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
-                  placeholder="https://example.com/avatar.jpg"
-                />
+                <input type="hidden" name="avatarUrl" value={avatarBase64} />
+                <ImageUpload onImageChange={(base64) => setAvatarBase64(base64)} />
               </div>
             </div>
           </div>
