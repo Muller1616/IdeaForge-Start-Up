@@ -2,17 +2,21 @@
 
 import { useState } from "react";
 import { User } from "@/lib/db";
-import { Mail, MapPin, Briefcase, Github, Linkedin, Calendar, Edit3, Save, X, User as UserIcon } from "lucide-react";
+import { Mail, MapPin, Briefcase, Github, Linkedin, Calendar, Edit3, Save, X, User as UserIcon, ArrowLeft } from "lucide-react";
 import { editProfile } from "@/lib/profileActions";
+import { useRouter } from "next/navigation";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 interface ProfileClientProps {
   user: User;
 }
 
 export default function ProfileClient({ user }: ProfileClientProps) {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [avatarBase64, setAvatarBase64] = useState<string>(user.avatarUrl || "");
 
   const formattedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
     month: "long",
@@ -40,7 +44,15 @@ export default function ProfileClient({ user }: ProfileClientProps) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Back Button */}
+      <button 
+        onClick={() => router.back()} 
+        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+      >
+        <ArrowLeft className="h-4 w-4" /> Back
+      </button>
+
       <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] shadow-xl">
         {/* Banner */}
         <div className="h-32 w-full bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] opacity-80" />
@@ -268,17 +280,13 @@ export default function ProfileClient({ user }: ProfileClientProps) {
               </div>
 
               <div>
-                <label htmlFor="avatarUrl" className="mb-2 block text-sm font-medium text-[var(--color-text)]">
-                  Profile Picture URL
+                <label className="mb-2 block text-sm font-medium text-[var(--color-text)]">
+                  Profile Picture
                 </label>
-                <input
-                  type="url"
-                  id="avatarUrl"
-                  name="avatarUrl"
-                  defaultValue={user.avatarUrl}
-                  disabled={isPending}
-                  className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
-                  placeholder="https://example.com/avatar.jpg"
+                <input type="hidden" name="avatarUrl" value={avatarBase64} />
+                <ImageUpload 
+                  currentImageUrl={user.avatarUrl} 
+                  onImageChange={(base64) => setAvatarBase64(base64)} 
                 />
               </div>
 
