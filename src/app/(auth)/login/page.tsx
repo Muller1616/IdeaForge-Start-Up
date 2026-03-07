@@ -1,90 +1,106 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/Card";
+import { useActionState, useEffect, useState } from "react";
+import { login } from "@/lib/auth";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // TODO: Connect to backend auth
-    await new Promise((r) => setTimeout(r, 1000));
-    setIsLoading(false);
-    toast.success("Welcome back!");
-    router.push("/dashboard");
-  };
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsPending(true);
+    setError(null);
+    
+    const formData = new FormData(event.currentTarget);
+    try {
+      const result = await login(formData);
+      if (result && result.error) {
+        setError(result.error);
+        setIsPending(false);
+      }
+    } catch (err) {
+      // Handled by redirect in server action
+    }
+  }
 
   return (
-    <div className="flex min-h-[calc(100vh-200px)] items-center justify-center px-4 py-16">
-      <div className="w-full max-w-md">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center p-4">
+      <div className="w-full max-w-md rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-8 shadow-xl">
         <div className="mb-8 text-center">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white font-bold">
-              IF
-            </span>
-            <span className="text-xl font-bold bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-              IdeaForge
-            </span>
-          </Link>
+          <h1 className="mb-2 text-3xl font-bold">Welcome back</h1>
+          <p className="text-[var(--color-text-muted)]">
+            Sign in to your IdeaForge account
+          </p>
         </div>
 
-        <Card className="border-slate-700/50 bg-slate-800/30 backdrop-blur">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-white">Welcome back</CardTitle>
-            <CardDescription className="text-slate-400">
-              Sign in to your account to continue
-            </CardDescription>
-          </CardHeader>
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4">
-              <Input
-                label="Email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              <Input
-                label="Password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <div className="flex items-center justify-end">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm text-indigo-400 hover:text-indigo-300"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4">
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Signing in..." : "Sign in"}
-              </Button>
-              <p className="text-center text-sm text-slate-400">
-                Don&apos;t have an account?{" "}
-                <Link href="/register" className="text-indigo-400 hover:text-indigo-300 font-medium">
-                  Sign up
-                </Link>
-              </p>
-            </CardFooter>
-          </form>
-        </Card>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="rounded-lg bg-[var(--color-error)]/10 p-4 text-sm text-[var(--color-error)] border border-[var(--color-error)]/20">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label
+              htmlFor="username"
+              className="mb-2 block text-sm font-medium text-[var(--color-text)]"
+            >
+              Username
+            </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              required
+              disabled={isPending}
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+              placeholder="Enter your username"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="password"
+              className="mb-2 block text-sm font-medium text-[var(--color-text)]"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              disabled={isPending}
+              className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3 text-[var(--color-text)] outline-none transition focus:border-[var(--color-primary)] focus:ring-1 focus:ring-[var(--color-primary)] disabled:opacity-50"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isPending}
+            className="w-full rounded-lg bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] py-3 font-medium text-white shadow-lg transition hover:scale-[1.02] hover:shadow-[var(--shadow-glow)] active:scale-[0.98] disabled:opacity-70 disabled:hover:scale-100 disabled:hover:shadow-lg flex justify-center items-center"
+          >
+            {isPending ? (
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : "Sign In"}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            className="font-medium text-[var(--color-primary)] hover:underline"
+          >
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -1,102 +1,174 @@
 import Link from "next/link";
+import { ArrowRight, Lightbulb, Users, Rocket, Target, Shield, Zap } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen">
+    <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-indigo-950/50 to-slate-950">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%236366f1\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40" />
-        <div className="relative mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              Turn Ideas Into{" "}
-              <span className="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">
-                Reality
-              </span>
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-slate-300">
-              Connect with entrepreneurs, developers, and designers. Share your startup ideas,
-              find co-founders, and build the next big thing together.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link
-                href="/ideas"
-                className="rounded-xl bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-indigo-500"
-              >
-                Explore Ideas
-              </Link>
-              <Link
-                href="/register"
-                className="rounded-xl border border-slate-600 bg-slate-800/50 px-8 py-3.5 text-base font-semibold text-white backdrop-blur transition hover:border-indigo-500/50 hover:bg-slate-800"
-              >
-                Get Started Free
-              </Link>
-            </div>
+      <section className="relative overflow-hidden pt-24 pb-32 lg:pt-36 lg:pb-40">
+        {/* Background gradient effects */}
+        <div className="absolute inset-0 bg-[var(--color-surface)]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/10 via-[var(--color-surface)] to-[var(--color-accent)]/10" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-primary)]/20 rounded-full blur-[120px] opacity-50" />
+        
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-sm font-medium mb-8 animate-fade-in-up">
+            <Zap className="h-4 w-4" />
+            <span>The premier platform for startup builders</span>
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8">
+            Where Great Ideas meet <br className="hidden md:block" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)]">
+              Exceptional Founders
+            </span>
+          </h1>
+          
+          <p className="mt-4 text-xl text-[var(--color-text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed">
+            IdeaForge is the ultimate collaboration platform to share your startup concepts, find co-founders, and build the next big thing together.
+          </p>
+          
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link
+              href="/register"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[var(--color-primary)]/30 transition-all hover:scale-105 hover:shadow-[var(--shadow-glow)]"
+            >
+              Sign Up Free
+              <ArrowRight className="h-5 w-5" />
+            </Link>
+            <Link
+              href="/login"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-8 py-4 text-base font-semibold text-[var(--color-text)] transition-all hover:bg-[var(--color-surface-hover)] hover:scale-105"
+            >
+              Log In
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="bg-slate-900/50 py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Everything You Need to Launch
-            </h2>
-            <p className="mt-4 text-lg text-slate-400">
-              From idea validation to team building—all in one platform.
+      <section className="py-24 bg-[var(--color-surface-elevated)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Everything You Need to Launch</h2>
+            <p className="text-[var(--color-text-muted)] text-lg max-w-2xl mx-auto">
+              From validating your idea to building your dream team, IdeaForge provides the tools you need to succeed.
             </p>
           </div>
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 sm:mt-20 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+          
+          <div className="grid md:grid-cols-3 gap-8">
             {[
               {
+                icon: <Lightbulb className="h-8 w-8 text-[var(--color-warning)]" />,
                 title: "Share Ideas",
-                description: "Post your startup concepts and get feedback from a community of innovators.",
-                icon: "💡",
+                description: "Post your startup concepts and get instant validation and constructive feedback from a community of innovators.",
               },
               {
+                icon: <Users className="h-8 w-8 text-[var(--color-primary)]" />,
                 title: "Find Co-Founders",
-                description: "Connect with developers, designers, and business experts who share your vision.",
-                icon: "🤝",
+                description: "Connect with talented developers, designers, and business experts who share your vision and complementary skills.",
               },
               {
+                icon: <Rocket className="h-8 w-8 text-[var(--color-error)]" />,
                 title: "Build Together",
-                description: "Form teams, collaborate in real-time, and turn ideas into successful startups.",
-                icon: "🚀",
+                description: "Form dedicated teams, collaborate in real-time workspaces, and execute your vision from zero to one.",
               },
-            ].map((feature) => (
+            ].map((feature, idx) => (
               <div
-                key={feature.title}
-                className="rounded-2xl border border-slate-700/50 bg-slate-800/30 p-8 backdrop-blur transition hover:border-indigo-500/30"
+                key={idx}
+                className="group relative rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 transition-all hover:border-[var(--color-primary)]/50 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="text-3xl">{feature.icon}</div>
-                <h3 className="mt-4 text-xl font-semibold text-white">{feature.title}</h3>
-                <p className="mt-2 text-slate-400">{feature.description}</p>
+                <div className="mb-6 inline-block rounded-2xl bg-[var(--color-surface-elevated)] p-4 group-hover:bg-[var(--color-primary)]/10 transition-colors">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
+                <p className="text-[var(--color-text-muted)] leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="bg-slate-950 py-24">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="rounded-3xl bg-gradient-to-r from-indigo-600/20 to-violet-600/20 border border-indigo-500/20 px-8 py-16 text-center sm:px-16">
-            <h2 className="text-3xl font-bold text-white">
-              Ready to bring your idea to life?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-slate-400">
-              Join thousands of entrepreneurs building the future. Create your free account today.
-            </p>
-            <Link
-              href="/register"
-              className="mt-8 inline-flex items-center rounded-xl bg-indigo-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:bg-indigo-500"
-            >
-              Create Free Account
-            </Link>
+      {/* About Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">About IdeaForge</h2>
+              <div className="space-y-6 text-lg text-[var(--color-text-muted)]">
+                <p>
+                  IdeaForge was built on a simple premise: great startups aren&apos;t built in a vacuum. The hardest part of starting a company isn&apos;t having a good idea, it&apos;s finding the right people to build it with.
+                </p>
+                <p>
+                  We created a dedicated ecosystem where visionary thinkers can collide with skilled builders. Whether you are a solo technical founder looking for a business partner, or an industry expert searching for technical execution, IdeaForge is your launchpad.
+                </p>
+              </div>
+              <ul className="mt-8 space-y-4">
+                {[
+                  "Verified professional profiles",
+                  "Secure direct messaging",
+                  "Skill-based matching engine",
+                ].map((item, i) => (
+                  <li key={i} className="flex items-center gap-3">
+                    <Shield className="h-5 w-5 text-[var(--color-success)]" />
+                    <span className="font-medium text-[var(--color-text)]">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-accent)] opacity-30 blur-2xl rounded-full" />
+              <div className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-8 shadow-2xl">
+                <div className="flex items-center justify-between mb-8 pb-8 border-b border-[var(--color-border)]">
+                  <div>
+                    <div className="text-4xl font-bold text-[var(--color-text)] mb-2">10k+</div>
+                    <div className="text-[var(--color-text-muted)] font-medium">Active Founders</div>
+                  </div>
+                  <Target className="h-12 w-12 text-[var(--color-primary)] opacity-50" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-4xl font-bold text-[var(--color-text)] mb-2">500+</div>
+                    <div className="text-[var(--color-text-muted)] font-medium">Startups Launched</div>
+                  </div>
+                  <Rocket className="h-12 w-12 text-[var(--color-accent)] opacity-50" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
-    </main>
+
+      {/* CTA Section */}
+      <section className="py-24 text-center mt-auto">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="rounded-3xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] p-12 sm:p-16 relative overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+            <h2 className="relative z-10 text-3xl md:text-5xl font-bold text-white mb-6">
+              Ready to bring your idea to life?
+            </h2>
+            <p className="relative z-10 text-lg text-white/80 max-w-2xl mx-auto mb-10">
+              Join thousands of entrepreneurs building the future. Your co-founder is waiting for you.
+            </p>
+            <div className="relative z-10 flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/register"
+                className="rounded-xl bg-white text-[var(--color-primary-dark)] px-8 py-4 text-base font-bold shadow-lg transition-transform hover:scale-105"
+              >
+                Create Free Account
+              </Link>
+              <Link
+                href="/login"
+                className="rounded-xl border-2 border-white/20 bg-black/10 text-white backdrop-blur px-8 py-4 text-base font-bold transition-all hover:bg-black/20 hover:scale-105"
+              >
+                Log In
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
