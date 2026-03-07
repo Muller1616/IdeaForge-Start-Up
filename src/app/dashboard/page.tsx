@@ -13,13 +13,9 @@ import {
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-
-// Mock user data
-const mockUser = {
-  name: "Alex Rivera",
-  email: "alex@example.com",
-  skills: ["Full Stack", "React", "Node.js"],
-};
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { getIdeas } from "@/lib/ideas";
 
 const mockStats = [
   { label: "Ideas Posted", value: 3, icon: Lightbulb, href: "/dashboard/ideas" },
@@ -28,30 +24,21 @@ const mockStats = [
   { label: "Upvotes Received", value: 89, icon: TrendingUp, href: "#" },
 ];
 
-const mockIdeas = [
-  {
-    id: "1",
-    title: "AI-Powered Recipe Generator",
-    upvotes: 342,
-    status: "active",
-    createdAt: "2 days ago",
-  },
-  {
-    id: "2",
-    title: "Sustainable Fashion Marketplace",
-    upvotes: 156,
-    status: "team-forming",
-    createdAt: "1 week ago",
-  },
-];
-
 const mockActivity = [
   { type: "comment", text: "Sarah commented on your idea", time: "1h ago" },
   { type: "join", text: "Alex requested to join your team", time: "3h ago" },
   { type: "upvote", text: "Your idea got 5 new upvotes", time: "5h ago" },
 ];
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  const ideas = await getIdeas();
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
       {/* Welcome section */}
@@ -61,7 +48,7 @@ export default function DashboardPage() {
           <span className="text-sm font-medium">Welcome back</span>
         </div>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-[var(--color-text)]">
-          {mockUser.name}
+          {user.username}
         </h1>
         <p className="mt-1 text-[var(--color-text-muted)]">
           Here&apos;s what&apos;s happening with your startup journey
@@ -106,31 +93,37 @@ export default function DashboardPage() {
               </Link>
             </div>
             <div className="mt-6 space-y-4">
-              {mockIdeas.map((idea) => (
-                <Link
-                  key={idea.id}
-                  href={`/ideas/${idea.id}`}
-                  className="block rounded-xl border border-[var(--color-border)] p-4 transition hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-surface-elevated)]"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="font-medium text-[var(--color-text)]">
-                        {idea.title}
-                      </h3>
-                      <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-                        {idea.upvotes} upvotes · {idea.createdAt}
-                      </p>
+              {ideas.length === 0 ? (
+                <div className="text-center py-6 text-[var(--color-text-muted)] border border-dashed border-[var(--color-border)] rounded-xl">
+                  No ideas posted yet. Create your first one!
+                </div>
+              ) : (
+                ideas.slice(0, 3).map((idea) => (
+                  <Link
+                    key={idea.id}
+                    href={`/ideas/${idea.id}`}
+                    className="block rounded-xl border border-[var(--color-border)] p-4 transition hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-surface-elevated)]"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="font-medium text-[var(--color-text)]">
+                          {idea.title}
+                        </h3>
+                        <p className="mt-1 text-sm text-[var(--color-text-muted)]">
+                          Posted by {idea.authorUsername} · {new Date(idea.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Badge
+                        variant={
+                          idea.status === "team-forming" ? "primary" : "secondary"
+                        }
+                      >
+                        {idea.status}
+                      </Badge>
                     </div>
-                    <Badge
-                      variant={
-                        idea.status === "team-forming" ? "primary" : "secondary"
-                      }
-                    >
-                      {idea.status}
-                    </Badge>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))
+              )}
             </div>
             <Link
               href="/dashboard/ideas"
