@@ -12,6 +12,8 @@ import {
   LogOut,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAuth } from "@/components/providers/AuthProvider";
+import { logout } from "@/lib/auth";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -31,8 +33,9 @@ const userMenuItems = [
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  // Demo: simulate logged-in state (will be replaced with real auth)
-  const [isLoggedIn] = useState(true);
+  const { user } = useAuth();
+  
+  const isLoggedIn = !!user;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[var(--color-border)] bg-[var(--color-surface)]/80 backdrop-blur-xl">
@@ -66,13 +69,16 @@ export function Navbar() {
           <ThemeToggle />
           {isLoggedIn ? (
             <div className="relative hidden md:block">
+              <span className="mr-4 text-sm font-medium text-[var(--color-text)]">
+                Welcome, {user?.username}
+              </span>
               <button
                 type="button"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-2 text-sm font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-hover)]"
+                className="inline-flex items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-4 py-2 text-sm font-medium text-[var(--color-text)] transition hover:bg-[var(--color-surface-hover)]"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-sm font-bold text-white">
-                  U
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] text-sm font-bold text-white uppercase">
+                  {user?.username?.charAt(0) || 'U'}
                 </div>
                 <ChevronDown
                   className={`h-4 w-4 transition ${userMenuOpen ? "rotate-180" : ""}`}
@@ -98,14 +104,16 @@ export function Navbar() {
                       </Link>
                     ))}
                     <hr className="my-2 border-[var(--color-border)]" />
-                    <Link
-                      href="/login"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--color-error)] transition hover:bg-[var(--color-surface-hover)]"
-                      onClick={() => setUserMenuOpen(false)}
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        logout();
+                      }}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-[var(--color-error)] transition hover:bg-[var(--color-surface-hover)]"
                     >
                       <LogOut className="h-4 w-4" />
                       Log out
-                    </Link>
+                    </button>
                   </div>
                 </>
               )}
@@ -187,13 +195,15 @@ export function Navbar() {
                     {item.label}
                   </Link>
                 ))}
-                <Link
-                  href="/login"
-                  className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--color-error)] hover:bg-[var(--color-surface-hover)]"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Log out
-                </Link>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      logout();
+                    }}
+                    className="flex w-full text-left rounded-lg px-4 py-3 text-sm font-medium text-[var(--color-error)] hover:bg-[var(--color-surface-hover)]"
+                  >
+                    Log out
+                  </button>
               </>
             ) : (
               <Link
