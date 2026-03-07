@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
+import { submitIdea } from "@/lib/ideaActions";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -51,11 +52,26 @@ export default function PostIdeaPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // TODO: API call
-    await new Promise((r) => setTimeout(r, 600));
-    setIsSubmitting(false);
-    toast.success("Idea published.");
-    router.push("/ideas");
+    
+    try {
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append("title", formData.title);
+      formDataToSubmit.append("description", formData.description);
+      formDataToSubmit.append("status", "active");
+
+      const result = await submitIdea(formDataToSubmit);
+      
+      if (result && result.error) {
+        toast.error(result.error);
+        setIsSubmitting(false);
+      } else {
+        toast.success("Idea published!");
+        // Redirect is handled by the server action
+      }
+    } catch (error) {
+       toast.error("Failed to publish idea.");
+       setIsSubmitting(false);
+    }
   };
 
   const toggleSkill = (skill: string) => {
