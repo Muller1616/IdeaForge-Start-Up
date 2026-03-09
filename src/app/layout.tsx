@@ -13,12 +13,14 @@ export const metadata: Metadata = {
   keywords: ["startup", "ideas", "collaboration", "co-founders", "entrepreneurship"],
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const user = await getCurrentUser();
+  const user = await getCurrentUser(); l
 
   return (
     <html lang="en" suppressHydrationWarning>
