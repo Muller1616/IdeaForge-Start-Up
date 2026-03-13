@@ -13,6 +13,8 @@ const protectedRoutes = [
 const authRoutes = [
   '/login',
   '/register',
+  '/forgot-password',
+  '/reset-password',
 ];
 
 export function middleware(request: NextRequest) {
@@ -30,8 +32,8 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAuthRoute && session) {
-    // Redirect to dashboard if trying to access login/register while already logged in
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    // Redirect to home if trying to access login/register while already logged in
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();
