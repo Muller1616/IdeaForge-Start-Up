@@ -5,7 +5,8 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
-import { ArrowLeft, Users, Calendar, MessageSquare } from "lucide-react";
+import { BackButton } from "@/components/ui/BackButton";
+import { Users, Calendar, MessageSquare } from "lucide-react";
 
 // Mock team data
 const mockTeam = {
@@ -42,13 +43,9 @@ export default function TeamPage() {
   return (
     <main className="min-h-screen bg-[var(--color-surface)]">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-        <Link
-          href="/dashboard"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Dashboard
-        </Link>
+        <div className="mb-8">
+          <BackButton fallbackHref="/dashboard">Back to Dashboard</BackButton>
+        </div>
 
         {/* Team Header */}
         <div className="mb-12">
