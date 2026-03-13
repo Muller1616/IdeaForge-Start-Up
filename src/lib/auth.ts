@@ -25,7 +25,7 @@ export async function login(formData: FormData) {
   // Store username for simple UI lookup if needed, but DB lookup is preferred
   cookieStore.set("username", user.username, { httpOnly: false, secure: process.env.NODE_ENV === "production" });
 
-  redirect("/dashboard");
+  redirect("/");
 }
 
 export async function register(formData: FormData) {
@@ -55,7 +55,7 @@ export async function register(formData: FormData) {
 
   const skills = skillsStr ? skillsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
 
-  const newUser = await createUser({
+  await createUser({
     username,
     email,
     password,
@@ -68,12 +68,8 @@ export async function register(formData: FormData) {
     avatarUrl,
   });
 
-  const cookieStore = await cookies();
-  cookieStore.set("session", "true", { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-  cookieStore.set("userId", newUser.id, { httpOnly: true, secure: process.env.NODE_ENV === "production" });
-  cookieStore.set("username", newUser.username, { httpOnly: false, secure: process.env.NODE_ENV === "production" });
-
-  redirect("/dashboard");
+  // Do not log the user in; redirect to login so they sign in explicitly
+  redirect("/login?registered=1");
 }
 
 export async function logout() {
@@ -86,18 +82,21 @@ export async function logout() {
 }
 
 export async function getCurrentUser(): Promise<User | null> {
-  const cookieStore = await cookies();
-  const session = cookieStore.get("session")?.value;
-  const userId = cookieStore.get("userId")?.value;
+  try {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("session")?.value;
+    const userId = cookieStore.get("userId")?.value;
 
-  if (session && userId) {
-    const user = await getUserById(userId);
-    if (user) {
-      // Don't send password to the client
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword as User;
+    if (session && userId) {
+      const user = await getUserById(userId);
+      if (user) {
+        // Don't send password to the client
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword as User;
+      }
     }
+  } catch {
+    // Cookie or DB read failed
   }
-
   return null;
 }
