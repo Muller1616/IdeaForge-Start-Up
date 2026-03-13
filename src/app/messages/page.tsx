@@ -143,37 +143,48 @@ export default function MessagesPage() {
   const handleSaveEditMessage = async () => {
     if (!editingMessageId || !editMessageContent.trim()) return;
     setLoadingEdit(true);
-    const result = await editMessageAction(editingMessageId, editMessageContent.trim());
-    setLoadingEdit(false);
-    if (result.error) {
-      setNotification({ type: "error", message: result.error });
-      return;
-    }
-    if (result.message) {
-      setThreadMessages((prev) =>
-        prev.map((m) => (m.id === result.message!.id ? { ...m, content: result.message!.content } : m))
-      );
-      setEditingMessageId(null);
-      setEditMessageContent("");
-      setNotification({ type: "success", message: "Message updated." });
-      loadConversations();
+    try {
+      const result = await editMessageAction(editingMessageId, editMessageContent.trim());
+      if (result.error) {
+        setNotification({ type: "error", message: result.error });
+        return;
+      }
+      if (result.message) {
+        setThreadMessages((prev) =>
+          prev.map((m) => (m.id === result.message!.id ? { ...m, content: result.message!.content } : m))
+        );
+        setEditingMessageId(null);
+        setEditMessageContent("");
+        setNotification({ type: "success", message: "Message updated." });
+        loadConversations();
+      }
+    } catch {
+      setNotification({ type: "error", message: "Something went wrong. Please try again." });
+    } finally {
+      setLoadingEdit(false);
     }
   };
 
   const handleDeleteMessage = async (msg: Message) => {
     setIsDeletingMessage(true);
-    const result = await deleteMessageAction(msg.id);
-    setIsDeletingMessage(false);
-    if (result.error) {
-      setNotification({ type: "error", message: result.error });
+    try {
+      const result = await deleteMessageAction(msg.id);
+      if (result.error) {
+        setNotification({ type: "error", message: result.error });
+        setPendingDeleteMessage(null);
+        return;
+      }
+      setThreadMessages((prev) => prev.filter((m) => m.id !== msg.id));
+      setEditingMessageId((id) => (id === msg.id ? null : id));
       setPendingDeleteMessage(null);
-      return;
+      setNotification({ type: "success", message: "Message deleted." });
+      loadConversations();
+    } catch {
+      setNotification({ type: "error", message: "Something went wrong. Please try again." });
+      setPendingDeleteMessage(null);
+    } finally {
+      setIsDeletingMessage(false);
     }
-    setThreadMessages((prev) => prev.filter((m) => m.id !== msg.id));
-    setEditingMessageId((id) => (id === msg.id ? null : id));
-    setPendingDeleteMessage(null);
-    setNotification({ type: "success", message: "Message deleted." });
-    loadConversations();
   };
 
   if (!currentUser) {

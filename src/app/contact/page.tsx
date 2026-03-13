@@ -18,15 +18,20 @@ export default function ContactPage() {
     setIsSubmitting(true);
     setNotification(null);
     const formData = new FormData(e.currentTarget);
-    const result = await submitContactMessage(formData);
-    setIsSubmitting(false);
-    if (result && "error" in result) {
-      setNotification({ type: "error", message: result.error ?? "Something went wrong." });
-      return;
-    }
-    if (result && "success" in result) {
-      setNotification({ type: "success", message: "Your message has been sent. We'll get back to you soon." });
-      (e.target as HTMLFormElement).reset();
+    try {
+      const result = await submitContactMessage(formData);
+      if (result && "error" in result) {
+        setNotification({ type: "error", message: result.error ?? "Something went wrong." });
+        return;
+      }
+      if (result && "success" in result) {
+        setNotification({ type: "success", message: "Your message has been sent. We'll get back to you soon." });
+        (e.target as HTMLFormElement).reset();
+      }
+    } catch {
+      setNotification({ type: "error", message: "Something went wrong. Please try again." });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
