@@ -206,13 +206,22 @@ export function Navbar() {
                   </button>
               </>
             ) : (
-              <Link
-                href="/login"
-                className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Log in
-              </Link>
+              <>
+                <Link
+                  href="/login"
+                  className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-hover)]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Log in
+                </Link>
+                <Link
+                  href="/register"
+                  className="block rounded-lg px-4 py-3 text-sm font-medium text-[var(--color-text)] hover:bg-[var(--color-surface-hover)]"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign up
+                </Link>
+              </>
             )}
           </div>
         </div>
