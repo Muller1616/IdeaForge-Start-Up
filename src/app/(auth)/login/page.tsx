@@ -1,12 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { login } from "@/lib/auth";
+import { InlineNotification } from "@/components/ui/InlineNotification";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const justRegistered = searchParams.get("registered") === "1";
+  const justReset = searchParams.get("reset") === "1";
+
+  useEffect(() => {
+    if (justRegistered) setSuccessMessage("Account created. Please sign in below.");
+    if (justReset) setSuccessMessage("Password reset. Sign in with your new password.");
+  }, [justRegistered, justReset]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,10 +47,21 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {successMessage && (
+            <InlineNotification
+              type="success"
+              message={successMessage}
+              onDismiss={() => setSuccessMessage(null)}
+              autoDismissSeconds={6}
+            />
+          )}
           {error && (
-            <div className="rounded-lg bg-[var(--color-error)]/10 p-4 text-sm text-[var(--color-error)] border border-[var(--color-error)]/20">
-              {error}
-            </div>
+            <InlineNotification
+              type="error"
+              message={error}
+              onDismiss={() => setError(null)}
+              autoDismissSeconds={0}
+            />
           )}
 
           <div>
@@ -61,12 +83,20 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-medium text-[var(--color-text)]"
-            >
-              Password
-            </label>
+            <div className="mb-2 flex items-center justify-between">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-[var(--color-text)]"
+              >
+                Password
+              </label>
+              <Link
+                href="/forgot-password"
+                className="text-sm font-medium text-[var(--color-primary)] hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <input
               type="password"
               id="password"

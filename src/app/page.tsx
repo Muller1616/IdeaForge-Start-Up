@@ -1,17 +1,20 @@
 import Link from "next/link";
-import { ArrowRight, Lightbulb, Users, Rocket, Target, Shield, Zap } from "lucide-react";
+import { ArrowRight, Lightbulb, Users, Rocket, Target, Shield, Zap, Compass } from "lucide-react";
+import { getCurrentUser } from "@/lib/auth";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getCurrentUser();
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-24 pb-32 lg:pt-36 lg:pb-40">
-        {/* Background gradient effects */}
-        <div className="absolute inset-0 bg-[var(--color-surface)]" />
-        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/10 via-[var(--color-surface)] to-[var(--color-accent)]/10" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-primary)]/20 rounded-full blur-[120px] opacity-50" />
+        {/* Background gradient effects - pointer-events-none so links/buttons remain clickable */}
+        <div className="absolute inset-0 bg-[var(--color-surface)] pointer-events-none" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-br from-[var(--color-primary)]/10 via-[var(--color-surface)] to-[var(--color-accent)]/10 pointer-events-none" aria-hidden />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-primary)]/20 rounded-full blur-[120px] opacity-50 pointer-events-none" aria-hidden />
         
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/10 text-[var(--color-primary)] text-sm font-medium mb-8 animate-fade-in-up">
             <Zap className="h-4 w-4" />
             <span>The premier platform for startup builders</span>
@@ -29,19 +32,49 @@ export default function HomePage() {
           </p>
           
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/register"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[var(--color-primary)]/30 transition-all hover:scale-105 hover:shadow-[var(--shadow-glow)]"
-            >
-              Sign Up Free
-              <ArrowRight className="h-5 w-5" />
-            </Link>
-            <Link
-              href="/login"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-8 py-4 text-base font-semibold text-[var(--color-text)] transition-all hover:bg-[var(--color-surface-hover)] hover:scale-105"
-            >
-              Log In
-            </Link>
+            {user ? (
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+                <Link
+                  href="/dashboard"
+                  prefetch={true}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[var(--color-primary)]/30 transition-all hover:scale-105 hover:shadow-[var(--shadow-glow)]"
+                >
+                  Dashboard
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+                <Link
+                  href="/ideas"
+                  prefetch={true}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-8 py-4 text-base font-semibold text-[var(--color-text)] transition-all hover:bg-[var(--color-surface-hover)] hover:scale-105"
+                >
+                  <Compass className="h-5 w-5" />
+                  Browse Ideas
+                </Link>
+                <Link
+                  href="/profile/me"
+                  prefetch={true}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-8 py-4 text-base font-semibold text-[var(--color-text)] transition-all hover:bg-[var(--color-surface-hover)] hover:scale-105"
+                >
+                  My Profile
+                </Link>
+              </div>
+            ) : (
+              <>
+                <Link
+                  href="/register"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[var(--color-primary)] to-[var(--color-primary-dark)] px-8 py-4 text-base font-semibold text-white shadow-lg shadow-[var(--color-primary)]/30 transition-all hover:scale-105 hover:shadow-[var(--shadow-glow)]"
+                >
+                  Sign Up Free
+                  <ArrowRight className="h-5 w-5" />
+                </Link>
+                <Link
+                  href="/login"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-8 py-4 text-base font-semibold text-[var(--color-text)] transition-all hover:bg-[var(--color-surface-hover)] hover:scale-105"
+                >
+                  Log In
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -145,26 +178,53 @@ export default function HomePage() {
       <section className="py-24 text-center mt-auto">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-primary-dark)] p-12 sm:p-16 relative overflow-hidden shadow-2xl">
-            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" aria-hidden />
             <h2 className="relative z-10 text-3xl md:text-5xl font-bold text-white mb-6">
-              Ready to bring your idea to life?
+              {user ? "Ready to build?" : "Ready to bring your idea to life?"}
             </h2>
             <p className="relative z-10 text-lg text-white/80 max-w-2xl mx-auto mb-10">
-              Join thousands of entrepreneurs building the future. Your co-founder is waiting for you.
+              {user
+                ? "Explore ideas, post your own, or find your next co-founder."
+                : "Join thousands of entrepreneurs building the future. Your co-founder is waiting for you."}
             </p>
             <div className="relative z-10 flex flex-col sm:flex-row justify-center gap-4">
-              <Link
-                href="/register"
-                className="rounded-xl bg-white text-[var(--color-primary-dark)] px-8 py-4 text-base font-bold shadow-lg transition-transform hover:scale-105"
-              >
-                Create Free Account
-              </Link>
-              <Link
-                href="/login"
-                className="rounded-xl border-2 border-white/20 bg-black/10 text-white backdrop-blur px-8 py-4 text-base font-bold transition-all hover:bg-black/20 hover:scale-105"
-              >
-                Log In
-              </Link>
+              {user ? (
+                <>
+                  <Link
+                    href="/ideas"
+                    className="rounded-xl bg-white text-[var(--color-primary-dark)] px-8 py-4 text-base font-bold shadow-lg transition-transform hover:scale-105"
+                  >
+                    Browse Ideas
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className="rounded-xl border-2 border-white/20 bg-black/10 text-white backdrop-blur px-8 py-4 text-base font-bold transition-all hover:bg-black/20 hover:scale-105"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href="/profile/me"
+                    className="rounded-xl border-2 border-white/20 bg-black/10 text-white backdrop-blur px-8 py-4 text-base font-bold transition-all hover:bg-black/20 hover:scale-105"
+                  >
+                    My Profile
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/register"
+                    className="rounded-xl bg-white text-[var(--color-primary-dark)] px-8 py-4 text-base font-bold shadow-lg transition-transform hover:scale-105"
+                  >
+                    Create Free Account
+                  </Link>
+                  <Link
+                    href="/login"
+                    className="rounded-xl border-2 border-white/20 bg-black/10 text-white backdrop-blur px-8 py-4 text-base font-bold transition-all hover:bg-black/20 hover:scale-105"
+                  >
+                    Log In
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
