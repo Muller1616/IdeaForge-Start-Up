@@ -78,9 +78,9 @@ src/
 
 - **Login** – `src/app/(auth)/login/page.tsx`
   - **Client component**.
-  - Form: `username`, `password` (required).
+  - Form: `username`, `password` (required). If the URL has `callbackUrl` (e.g. from middleware when accessing a protected route), it is sent as a hidden field so login redirects there after success.
   - On submit: builds `FormData`, calls server action `login(formData)` from `@/lib/auth`.
-  - On success: `login` sets cookies and `redirect("/dashboard")`; no return value.
+  - On success: `login` sets cookies and redirects to `callbackUrl` (if valid and same-origin path) or `"/dashboard"`; no return value.
   - On error: `login` returns `{ error: string }`; page shows it in a red box and keeps user on login.
   - Loading: `isPending` disables inputs and shows spinner in button.
   - Link to `/register`.
@@ -89,7 +89,7 @@ src/
   - **Client component**.
   - Form: username, email, password, profession, location, bio (max 300), skills (comma-separated), LinkedIn, GitHub, profile picture via `ImageUpload` (stores base64 in hidden `avatarUrl`).
   - On submit: `FormData` + hidden `avatarUrl` → server action `register(formData)` from `@/lib/auth`.
-  - On success: `register` sets cookies and `redirect("/dashboard")`.
+  - On success: `register` does not log the user in; it redirects to `"/login?registered=1"` so the user signs in explicitly.
   - On error: `register` returns `{ error }`; page shows it and does not redirect.
   - Uses `ImageUpload` from `@/components/ui/ImageUpload` to capture avatar as base64.
 
@@ -233,9 +233,9 @@ src/
 ### 5.2 Auth – `src/lib/auth.ts`
 - **"use server"** so all exports are server actions.
 - **login(formData)**  
-  Reads `username`, `password`. Loads user with `getUserByUsername(username)` from `@/lib/db`. If missing or password mismatch, returns `{ error: "Invalid username or password" }`. Otherwise sets cookies `session`, `userId`, `username` and calls `redirect("/dashboard")`.
+  Reads `username`, `password`, and optional `callbackUrl`. Loads user with `getUserByUsername(username)` from `@/lib/db`. If missing or password mismatch, returns `{ error: "Invalid username or password" }`. Otherwise sets cookies `session`, `userId`, `username` and redirects to `callbackUrl` (if a valid same-origin path) or `"/dashboard"`.
 - **register(formData)**  
-  Reads username, email, password, profession, bio, skills, location, linkedin, github, avatarUrl. Validates required fields and bio length; checks `getUserByUsername`. Creates user with `createUser` from `@/lib/db`, sets same cookies, `redirect("/dashboard")`. On validation/duplicate error returns `{ error }`.
+  Reads username, email, password, profession, bio, skills, location, linkedin, github, avatarUrl. Validates required fields and bio length; checks `getUserByUsername`. Creates user with `createUser` from `@/lib/db`. Does not set cookies; redirects to `"/login?registered=1"` so the user signs in. On validation/duplicate error returns `{ error }`.
 - **logout()**  
   Deletes `session`, `userId`, `username` cookies and `redirect("/")`.
 - **getCurrentUser()**  
@@ -275,7 +275,7 @@ src/
 
 ## 6. Middleware – `src/middleware.ts`
 - Runs on every request matched by the config (excluding api, _next/static, _next/image, favicon, sitemap, robots).
-- **Protected routes** (prefix): `/dashboard`, `/ideas/new`, `/messages`, `/profile`. If no `session` cookie → redirect to `/login` with `callbackUrl` in query.
+- **Protected routes** (prefix): `/dashboard`, `/ideas/new`, `/messages`, `/profile/me`. (`/profile/[userId]` is public so anyone can view user profiles.) If no `session` cookie → redirect to `/login` with `callbackUrl` in query.
 - **Auth routes**: `/login`, `/register`. If `session` exists → redirect to `/dashboard`.
 - Uses `NextResponse.redirect` and `NextResponse.next()`.
 

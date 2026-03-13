@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Add the routes you want to protect here
+// Add the routes you want to protect here (only /profile/me is protected; /profile/[userId] is public)
 const protectedRoutes = [
   '/dashboard',
   '/ideas/new',
   '/messages',
-  '/profile',
+  '/profile/me',
 ];
 
 // Add the auth routes (should not be accessible if already logged in)
