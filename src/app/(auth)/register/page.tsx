@@ -5,6 +5,7 @@ import { useState } from "react";
 import { register } from "@/lib/auth";
 import { User, Mail, Briefcase, MapPin, AlignLeft, Code, Linkedin, Github } from "lucide-react";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { InlineNotification } from "@/components/ui/InlineNotification";
 
 export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
@@ -40,9 +41,12 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="rounded-lg bg-[var(--color-error)]/10 p-4 text-sm text-[var(--color-error)] border border-[var(--color-error)]/20">
-              {error}
-            </div>
+            <InlineNotification
+              type="error"
+              message={error}
+              onDismiss={() => setError(null)}
+              autoDismissSeconds={0}
+            />
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
