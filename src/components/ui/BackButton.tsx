@@ -31,7 +31,11 @@ export function BackButton({ fallbackHref, children = "Back", className }: BackB
         href={fallbackHref}
         onClick={(e) => {
           e.preventDefault();
-          router.back();
+          if (typeof window !== "undefined" && window.history.length > 1) {
+            router.back();
+          } else {
+            router.push(fallbackHref);
+          }
         }}
         className={cn}
       >

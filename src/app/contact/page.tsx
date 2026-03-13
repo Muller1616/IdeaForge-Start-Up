@@ -26,7 +26,7 @@ export default function ContactPage() {
       }
       if (result && "success" in result) {
         setNotification({ type: "success", message: "Your message has been sent. We'll get back to you soon." });
-        (e.target as HTMLFormElement).reset();
+        e.currentTarget.reset();
       }
     } catch {
       setNotification({ type: "error", message: "Something went wrong. Please try again." });
