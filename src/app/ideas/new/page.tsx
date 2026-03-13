@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { toast } from "sonner";
 import { submitIdea } from "@/lib/ideaActions";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { ArrowLeft, Lightbulb } from "lucide-react";
+import { BackButton } from "@/components/ui/BackButton";
+import { InlineNotification } from "@/components/ui/InlineNotification";
+import { Lightbulb } from "lucide-react";
+
+type PageNotification = { type: "error" | "success" | "warning"; message: string } | null;
 
 const CATEGORIES = [
   "Technology",
@@ -38,6 +40,7 @@ const SKILLS_OPTIONS = [
 
 export default function PostIdeaPage() {
   const router = useRouter();
+  const [notification, setNotification] = useState<PageNotification>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -52,7 +55,7 @@ export default function PostIdeaPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const formDataToSubmit = new FormData();
       formDataToSubmit.append("title", formData.title);
@@ -60,17 +63,24 @@ export default function PostIdeaPage() {
       formDataToSubmit.append("status", "active");
 
       const result = await submitIdea(formDataToSubmit);
-      
-      if (result && result.error) {
-        toast.error(result.error);
+
+      if (result && "error" in result && result.error) {
+        setNotification({ type: "error", message: result.error });
         setIsSubmitting(false);
-      } else {
-        toast.success("Idea published!");
-        // Redirect is handled by the server action
+        return;
       }
-    } catch (error) {
-       toast.error("Failed to publish idea.");
-       setIsSubmitting(false);
+      if (!result || !("success" in result) || !result.success) {
+        setNotification({ type: "error", message: "Failed to publish idea. Please try again." });
+        setIsSubmitting(false);
+        return;
+      }
+      setNotification({ type: "success", message: "Idea published!" });
+      setTimeout(() => router.push("/ideas"), 1500);
+    } catch {
+      setNotification({ type: "error", message: "Failed to publish idea. Please try again." });
+      setIsSubmitting(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -86,13 +96,9 @@ export default function PostIdeaPage() {
   return (
     <main className="min-h-screen bg-[var(--color-surface)]">
       <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-        <Link
-          href="/ideas"
-          className="mb-8 inline-flex items-center gap-2 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Ideas
-        </Link>
+        <div className="mb-8">
+          <BackButton fallbackHref="/ideas">Back to Ideas</BackButton>
+        </div>
 
         <div className="mb-10">
           <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
@@ -102,6 +108,17 @@ export default function PostIdeaPage() {
             Describe your idea and find collaborators who share your vision.
           </p>
         </div>
+
+        {notification && (
+          <div className="mb-6">
+            <InlineNotification
+              type={notification.type}
+              message={notification.message}
+              onDismiss={() => setNotification(null)}
+              autoDismissSeconds={notification.type === "success" ? 5 : 0}
+            />
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <Card className="mb-8">
