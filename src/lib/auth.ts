@@ -25,7 +25,14 @@ export async function login(formData: FormData) {
   // Store username for simple UI lookup if needed, but DB lookup is preferred
   cookieStore.set("username", user.username, { httpOnly: false, secure: process.env.NODE_ENV === "production" });
 
-  redirect("/");
+  const callbackUrl = formData.get("callbackUrl") as string | null;
+  const safeUrl =
+    typeof callbackUrl === "string" &&
+    callbackUrl.startsWith("/") &&
+    !callbackUrl.includes("//")
+      ? callbackUrl
+      : "/dashboard";
+  redirect(safeUrl);
 }
 
 export async function register(formData: FormData) {

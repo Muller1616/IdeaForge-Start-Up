@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [isPending, setIsPending] = useState(false);
   const justRegistered = searchParams.get("registered") === "1";
   const justReset = searchParams.get("reset") === "1";
+  const callbackUrl = searchParams.get("callbackUrl");
 
   useEffect(() => {
     if (justRegistered) setSuccessMessage("Account created. Please sign in below.");
@@ -50,6 +51,9 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+          {callbackUrl && (
+            <input type="hidden" name="callbackUrl" value={callbackUrl} />
+          )}
           {successMessage && (
             <InlineNotification
               type="success"
