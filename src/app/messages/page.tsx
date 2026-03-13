@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { BackButton } from "@/components/ui/BackButton";
 import { Search, Send, MoreVertical, Pencil, Trash2 } from "lucide-react";
@@ -56,6 +56,7 @@ export default function MessagesPage() {
   const [notification, setNotification] = useState<{ type: "error" | "success" | "warning"; message: string } | null>(null);
   const [pendingDeleteMessage, setPendingDeleteMessage] = useState<Message | null>(null);
   const [isDeletingMessage, setIsDeletingMessage] = useState(false);
+  const selectedUserIdRef = useRef(selectedUserId);
 
   const loadConversations = useCallback(async () => {
     if (!currentUser?.id) return;
@@ -101,11 +102,19 @@ export default function MessagesPage() {
       setThreadMessages([]);
       return;
     }
+    selectedUserIdRef.current = selectedUserId;
+    const requestFor = selectedUserId;
     setLoadingThread(true);
     getMessagesBetween(currentUser.id, selectedUserId)
-      .then(setThreadMessages)
-      .catch(() => setNotification({ type: "error", message: "Could not load messages. Please try again." }))
-      .finally(() => setLoadingThread(false));
+      .then((messages) => {
+        if (selectedUserIdRef.current === requestFor) setThreadMessages(messages);
+      })
+      .catch(() => {
+        if (selectedUserIdRef.current === requestFor) setNotification({ type: "error", message: "Could not load messages. Please try again." });
+      })
+      .finally(() => {
+        if (selectedUserIdRef.current === requestFor) setLoadingThread(false);
+      });
   }, [currentUser?.id, selectedUserId]);
 
   const selectedUser = selectedUserId

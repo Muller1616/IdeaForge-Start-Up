@@ -76,12 +76,11 @@ export default function PostIdeaPage() {
       }
       setNotification({ type: "success", message: "Idea published!" });
       setTimeout(() => router.push("/ideas"), 1500);
+      return;
     } catch {
       setNotification({ type: "error", message: "Failed to publish idea. Please try again." });
-      setIsSubmitting(false);
-    } finally {
-      setIsSubmitting(false);
     }
+    setIsSubmitting(false);
   };
 
   const toggleSkill = (skill: string) => {
