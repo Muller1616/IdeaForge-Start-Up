@@ -23,16 +23,19 @@ export default function LoginPage() {
     event.preventDefault();
     setIsPending(true);
     setError(null);
-    
+
     const formData = new FormData(event.currentTarget);
     try {
       const result = await login(formData);
       if (result && result.error) {
         setError(result.error);
-        setIsPending(false);
+        return;
       }
     } catch (err) {
-      // Handled by redirect in server action
+      if (err && typeof err === "object" && "digest" in err && (err as { digest?: string }).digest === "NEXT_REDIRECT") throw err;
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsPending(false);
     }
   }
 
