@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { ArrowLeft, Search, Eye, Trash2 } from "lucide-react";
+import { Search, Eye, Trash2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
+import { BackButton } from "@/components/ui/BackButton";
 
 // Mock data
 const ideas = [
@@ -40,11 +41,7 @@ export default function AdminIdeasPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
+        <BackButton fallbackHref="/admin">Back</BackButton>
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
             Idea Moderation

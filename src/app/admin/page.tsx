@@ -7,6 +7,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { BackButton } from "@/components/ui/BackButton";
 
 const stats = [
   {
@@ -46,6 +47,9 @@ const stats = [
 export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
+      <div>
+        <BackButton fallbackHref="/dashboard">Back</BackButton>
+      </div>
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
           Admin Dashboard

@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { ArrowLeft, AlertTriangle } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
+import { BackButton } from "@/components/ui/BackButton";
 
 // Mock reported content
 const reportedItems = [
@@ -28,11 +29,7 @@ export default function AdminModerationPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Link href="/admin">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
+        <BackButton fallbackHref="/admin">Back</BackButton>
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text)]">
             Content Moderation
