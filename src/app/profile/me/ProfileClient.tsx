@@ -2,20 +2,21 @@
 
 import { useState } from "react";
 import { User } from "@/lib/db";
-import { Mail, MapPin, Briefcase, Github, Linkedin, Calendar, Edit3, Save, X, User as UserIcon, ArrowLeft } from "lucide-react";
+import { Mail, MapPin, Briefcase, Github, Linkedin, Calendar, Edit3, Save, X, User as UserIcon } from "lucide-react";
 import { editProfile } from "@/lib/profileActions";
-import { useRouter } from "next/navigation";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { BackButton } from "@/components/ui/BackButton";
+import { InlineNotification } from "@/components/ui/InlineNotification";
 
 interface ProfileClientProps {
   user: User;
 }
 
 export default function ProfileClient({ user }: ProfileClientProps) {
-  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [avatarBase64, setAvatarBase64] = useState<string>(user.avatarUrl || "");
 
   const formattedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
@@ -35,6 +36,7 @@ export default function ProfileClient({ user }: ProfileClientProps) {
         setError(result.error);
       } else {
         setIsEditing(false);
+        setSuccessMessage("Profile updated.");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -45,13 +47,9 @@ export default function ProfileClient({ user }: ProfileClientProps) {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Back Button */}
-      <button 
-        onClick={() => router.back()} 
-        className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
-      >
-        <ArrowLeft className="h-4 w-4" /> Back
-      </button>
+      <div className="mb-6">
+        <BackButton fallbackHref="/dashboard">Back</BackButton>
+      </div>
 
       <div className="overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] shadow-xl">
         {/* Banner */}
@@ -91,9 +89,24 @@ export default function ProfileClient({ user }: ProfileClientProps) {
             </div>
           </div>
 
+          {successMessage && (
+            <div className="mb-6">
+              <InlineNotification
+                type="success"
+                message={successMessage}
+                onDismiss={() => setSuccessMessage(null)}
+                autoDismissSeconds={5}
+              />
+            </div>
+          )}
           {error && (
-            <div className="mb-6 rounded-lg bg-[var(--color-error)]/10 p-4 text-sm text-[var(--color-error)] border border-[var(--color-error)]/20">
-              {error}
+            <div className="mb-6">
+              <InlineNotification
+                type="error"
+                message={error}
+                onDismiss={() => setError(null)}
+                autoDismissSeconds={0}
+              />
             </div>
           )}
 
