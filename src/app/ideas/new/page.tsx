@@ -75,6 +75,7 @@ export default function PostIdeaPage() {
         return;
       }
       setNotification({ type: "success", message: "Idea published!" });
+      setIsSubmitting(false);
       setTimeout(() => router.push("/ideas"), 1500);
       return;
     } catch {
