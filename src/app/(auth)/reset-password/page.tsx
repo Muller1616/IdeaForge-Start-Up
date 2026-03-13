@@ -31,8 +31,9 @@ function ResetPasswordForm() {
       if (result?.error) {
         setError(result.error);
       }
-    } catch {
-      // Redirect throws; navigation will occur.
+    } catch (err) {
+      if (err && typeof err === "object" && "digest" in err && (err as { digest?: string }).digest === "NEXT_REDIRECT") throw err;
+      setError("Something went wrong. Please try again.");
     } finally {
       setIsPending(false);
     }
