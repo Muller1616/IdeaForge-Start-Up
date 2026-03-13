@@ -84,6 +84,9 @@ export default function MessagesPage() {
       });
       setOtherUsers(users);
       setConversations(list);
+    } catch {
+      setNotification({ type: "error", message: "Could not load conversations. Please try again." });
+      setConversations([]);
     } finally {
       setLoadingConvos(false);
     }
@@ -101,6 +104,7 @@ export default function MessagesPage() {
     setLoadingThread(true);
     getMessagesBetween(currentUser.id, selectedUserId)
       .then(setThreadMessages)
+      .catch(() => setNotification({ type: "error", message: "Could not load messages. Please try again." }))
       .finally(() => setLoadingThread(false));
   }, [currentUser?.id, selectedUserId]);
 
