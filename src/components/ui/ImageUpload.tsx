@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { UploadCloud, Image as ImageIcon } from "lucide-react";
+import { InlineNotification } from "@/components/ui/InlineNotification";
 
 interface ImageUploadProps {
   currentImageUrl?: string;
@@ -8,12 +9,14 @@ interface ImageUploadProps {
 
 export function ImageUpload({ currentImageUrl, onImageChange }: ImageUploadProps) {
   const [preview, setPreview] = useState<string | null>(currentImageUrl || null);
+  const [error, setError] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setError(null);
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert("File size must be less than 2MB");
+        setError("File size must be less than 2MB");
         return;
       }
       const reader = new FileReader();
@@ -28,6 +31,14 @@ export function ImageUpload({ currentImageUrl, onImageChange }: ImageUploadProps
 
   return (
     <div className="flex flex-col gap-4">
+      {error && (
+        <InlineNotification
+          type="error"
+          message={error}
+          onDismiss={() => setError(null)}
+          autoDismissSeconds={0}
+        />
+      )}
       {preview ? (
         <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-[var(--color-surface-elevated)] bg-[var(--color-surface)] shadow-md">
           <img src={preview} alt="Profile Preview" className="h-full w-full object-cover" />
