@@ -17,11 +17,13 @@ export interface User {
 }
 
 const DB_PATH = path.join(process.cwd(), 'data', 'users.json');
+const DATA_DIR = path.join(process.cwd(), 'data');
 
 async function ensureDb() {
   try {
     await fs.access(DB_PATH);
   } catch {
+    await fs.mkdir(DATA_DIR, { recursive: true });
     await fs.writeFile(DB_PATH, JSON.stringify({ users: [] }, null, 2));
   }
 }
@@ -67,4 +69,13 @@ export async function updateUser(id: string, updates: Partial<Omit<User, 'id' | 
   await fs.writeFile(DB_PATH, JSON.stringify({ users }, null, 2));
   
   return users[index];
+}
+
+export async function setUserPassword(id: string, newPassword: string): Promise<boolean> {
+  const users = await getUsers();
+  const index = users.findIndex(u => u.id === id);
+  if (index === -1) return false;
+  users[index].password = newPassword;
+  await fs.writeFile(DB_PATH, JSON.stringify({ users }, null, 2));
+  return true;
 }
