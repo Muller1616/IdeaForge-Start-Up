@@ -56,7 +56,7 @@ export default function MessagesPage() {
   const [notification, setNotification] = useState<{ type: "error" | "success" | "warning"; message: string } | null>(null);
   const [pendingDeleteMessage, setPendingDeleteMessage] = useState<Message | null>(null);
   const [isDeletingMessage, setIsDeletingMessage] = useState(false);
-  const selectedUserIdRef = useRef(selectedUserId);
+  const selectedUserIdRef = useRef<string | null>(null);
 
   const loadConversations = useCallback(async () => {
     if (!currentUser?.id) return;
