@@ -101,6 +101,7 @@ export default function MessagesPage() {
   useEffect(() => {
     if (!currentUser?.id || !selectedUserId) {
       setThreadMessages([]);
+      setLoadingThread(false);
       return;
     }
     selectedUserIdRef.current = selectedUserId;
@@ -116,6 +117,9 @@ export default function MessagesPage() {
       .finally(() => {
         if (selectedUserIdRef.current === requestFor) setLoadingThread(false);
       });
+    return () => {
+      setLoadingThread(false);
+    };
   }, [currentUser?.id, selectedUserId]);
 
   const selectedUser = selectedUserId
