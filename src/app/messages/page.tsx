@@ -87,6 +87,7 @@ export default function MessagesPage() {
       setConversations(list);
     } catch {
       setNotification({ type: "error", message: "Could not load conversations. Please try again." });
+      setOtherUsers([]);
       setConversations([]);
     } finally {
       setLoadingConvos(false);
